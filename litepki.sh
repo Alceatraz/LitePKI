@@ -1,10 +1,5 @@
 #!/usr/bin/env bash
 
-# Common OID, if you using ocserv this will helpful
-# givenName --------------- 2.5.4.42"
-# commonName -------------- 2.5.4.3"
-# userID ------------------ 0.9.2342.19200300.100.1.1"
-
 # ===============================================================================================================================
 
 # Don't modify above this line
@@ -16,30 +11,30 @@
 # Common part
 
 [ -z "$DIST_C" ] && DIST_C='CN'
-[ -z "$DIST_ST" ] && DIST_ST='Beijing'
-[ -z "$DIST_L" ] && DIST_L='Beijing'
-[ -z "$DIST_O" ] && DIST_O='NoWhere'
+[ -z "$DIST_ST" ] && DIST_ST='example'
+[ -z "$DIST_L" ] && DIST_L='example'
+[ -z "$DIST_O" ] && DIST_O='example'
 
 # For Root CA
 
-[ -z "$DIST_OU" ] && DIST_OU='NoWhere'
-[ -z "$DIST_CN" ] && DIST_CN='NoWhere Root CA'
-[ -z "$DIST_GN" ] && DIST_GN='NoWhere Root CA'
+[ -z "$DIST_OU" ] && DIST_OU='example'
+[ -z "$DIST_CN" ] && DIST_CN='example Root CA'
+[ -z "$DIST_GN" ] && DIST_GN='example Root CA'
 
 # For Intermediate CA Server
 
-[ -z "$DIST_OU_S" ] && DIST_OU_S='NoWhere'
-[ -z "$DIST_CN_S" ] && DIST_CN_S='NoWhere Intermediate CA For HTTP-SSL'
+[ -z "$DIST_OU_S" ] && DIST_OU_S='example'
+[ -z "$DIST_CN_S" ] && DIST_CN_S='example Intermediate CA For HTTP-SSL'
 
 # For Intermediate CA Client
 
-[ -z "$DIST_OU_C" ] && DIST_OU_C='NoWhere'
-[ -z "$DIST_CN_C" ] && DIST_CN_C='NoWhere Intermediate CA For HTTP-SSL'
+[ -z "$DIST_OU_C" ] && DIST_OU_C='example'
+[ -z "$DIST_CN_C" ] && DIST_CN_C='example Intermediate CA For HTTP-SSL'
 
 # Uncomment those line and change it to you CRL server address to enable crlDistributionPoints
 
-X509_ROOT_CRL='URI:http://NoWhere.com/root.crl,URI:http://NoWhere.org/root.crl'
-X509_SERV_CRL='URI:http://NoWhere.com/serv.crl,URI:http://NoWhere.org/serv.crl'
+X509_ROOT_CRL='URI:http://example.com/root.crl,URI:http://example.org/root.crl'
+X509_SERV_CRL='URI:http://example.com/serv.crl,URI:http://example.org/serv.crl'
 
 # Client Intermediate CA has no crlDistributionPoints support
 
@@ -47,19 +42,23 @@ X509_SERV_CRL='URI:http://NoWhere.com/serv.crl,URI:http://NoWhere.org/serv.crl'
 
 # ===============================================================================================================================
 
-# Common OID, if you using ocserv this will helpful
-# givenName --------------- 2.5.4.42"
-# commonName -------------- 2.5.4.3"
-# userID ------------------ 0.9.2342.19200300.100.1.1"
-
-if [ "$DIST_O" == "BlackTechStudio" ] || [ "$DIST_OU" == "BlackTechStudio IT Dept" ]; then
+if [ "$DIST_ST" == "example" ] || [ "$DIST_L" == "example" ] || [ "$DIST_O" == "example" ] || [ "$DIST_OU" == "example" ]; then
   echo '================================================================================'
   echo '         !!! REMEMBER MODIFY DEFAULT DN SETTING IN THE SCRIPT !!!'
   echo '================================================================================'
-  echo ' ERROR: Default DN setting found!'
-  echo ' ERROR: You should make a copy for each PKI system (directory)'
-  echo ' ERROR: Then modify those copy DN section with your requirement'
+  echo ' ERROR: Default DN section settings found'
   echo ' ERROR: LitePKI wont let you do any thing before you modify DN section'
+  echo ' ERROR: RTFM https://github.com/Alceatraz/LitePKI'
+  [ -z "$DEBUG" ] && exit 1
+fi
+
+if [ "$DIST_OU_S" == "example" ] || [ "$DIST_OU_C" == "example" ]; then
+  echo '================================================================================'
+  echo '         !!! REMEMBER MODIFY DEFAULT DN SETTING IN THE SCRIPT !!!'
+  echo '================================================================================'
+  echo ' ERROR: Default DN section settings found'
+  echo ' ERROR: LitePKI wont let you do any thing before you modify DN section'
+  echo ' ERROR: RTFM https://github.com/Alceatraz/LitePKI'
   [ -z "$DEBUG" ] && exit 1
 fi
 
@@ -142,10 +141,10 @@ function install() {
   touch cert/ca-root/index.txt
   touch cert/sub-server/index.txt
 
-  echo '01' > cert/ca-root/serial.txt
-  echo '01' > cert/sub-server/serial.txt
+  echo '01' >cert/ca-root/serial.txt
+  echo '01' >cert/sub-server/serial.txt
 
-  cat > cert/ca-root/config-req.ini << EOF
+  cat >cert/ca-root/config-req.ini <<EOF
 HOME = .
 [ ca ]
 default_ca = @default_ca
@@ -183,7 +182,7 @@ organizationalUnitName_default = $DIST_OU
 commonName_default             = $DIST_CN
 EOF
 
-  cat > cert/ca-root/config-sig.ini << EOF
+  cat >cert/ca-root/config-sig.ini <<EOF
 HOME = .
 [ ca ]
 default_ca = default_ca
@@ -217,7 +216,7 @@ keyUsage               = keyCertSign, cRLSign
 crlDistributionPoints  = $X509_SERV_CRL
 EOF
 
-  cat > cert/sub-server/config-req.ini << EOF
+  cat >cert/sub-server/config-req.ini <<EOF
 HOME = .
 [ req ]
 default_bits       = 2048
@@ -243,7 +242,7 @@ basicConstraints     = critical, CA:true, pathlen:0
 keyUsage             = keyCertSign, cRLSign
 EOF
 
-  cat > cert/sub-server/config-sig.ini << EOF
+  cat >cert/sub-server/config-sig.ini <<EOF
 HOME = .
 [ ca ]
 default_ca = default_ca
@@ -278,14 +277,14 @@ keyUsage             = digitalSignature, keyEncipherment
 EOF
 
   if [ -z "$X509_ROOT_CRL" ]; then
-    grep -v 'crlDistributionPoints' cert/ca-root/config-req.ini > cert/ca-root/config-req.ini-temp
-    cat cert/ca-root/config-req.ini-temp > cert/ca-root/config-req.ini
+    grep -v 'crlDistributionPoints' cert/ca-root/config-req.ini >cert/ca-root/config-req.ini-temp
+    cat cert/ca-root/config-req.ini-temp >cert/ca-root/config-req.ini
     rm -rf cert/ca-root/config-req.ini-temp
   fi
 
   if [ -z "$X509_SERV_CRL" ]; then
-    grep -v 'crlDistributionPoints' cert/ca-root/config-sig.ini > cert/ca-root/config-sig.ini-temp
-    cat cert/ca-root/config-sig.ini-temp > cert/ca-root/config-sig.ini
+    grep -v 'crlDistributionPoints' cert/ca-root/config-sig.ini >cert/ca-root/config-sig.ini-temp
+    cat cert/ca-root/config-sig.ini-temp >cert/ca-root/config-sig.ini
     rm -rf cert/ca-root/config-sig.ini-temp
   fi
 
@@ -307,21 +306,21 @@ EOF
     -infiles cert/sub-server/cert.csr
 
   if [ -n "$X509_SERV_CRL" ]; then
-    grep -v 'crlDistributionPoints' cert/ca-root/config-sig.ini > cert/ca-root/config-sig.ini-temp
-    cat cert/ca-root/config-sig.ini-temp > cert/ca-root/config-sig.ini
+    grep -v 'crlDistributionPoints' cert/ca-root/config-sig.ini >cert/ca-root/config-sig.ini-temp
+    cat cert/ca-root/config-sig.ini-temp >cert/ca-root/config-sig.ini
     rm -rf cert/ca-root/config-sig.ini-temp
   fi
 
-  openssl x509 -in cert/sub-server.crt > cert/sub-server/cert.crt
+  openssl x509 -in cert/sub-server.crt >cert/sub-server/cert.crt
 
   rm -rf cert/sub-server.crt
 
   {
     cat "cert/sub-server/cert.crt"
     cat "cert/ca-root/cert.crt"
-  } > cert/sub-server/server.crt
+  } >cert/sub-server/server.crt
 
-  echo 'This file is a flag. Deny reinstall PKI when exist.' > cert/lock.txt
+  echo 'This file is a flag. Deny reinstall PKI when exist.' >cert/lock.txt
 
 }
 
@@ -337,9 +336,9 @@ function createClientCA() {
   mkdir "cert/sub-client/$name"
   mkdir "cert/sub-client/$name/output"
   touch "cert/sub-client/$name/index.txt"
-  echo '01' > "cert/sub-client/$name/serial.txt"
+  echo '01' >"cert/sub-client/$name/serial.txt"
 
-  cat > "cert/sub-client/$name/config-req.ini" << EOF
+  cat >"cert/sub-client/$name/config-req.ini" <<EOF
 HOME = .
 [ req ]
 default_bits       = 2048
@@ -365,7 +364,7 @@ basicConstraints     = critical, CA:true, pathlen:0
 keyUsage             = keyCertSign, cRLSign
 EOF
 
-  cat > "cert/sub-client/$name/config-sig.ini" << EOF
+  cat >"cert/sub-client/$name/config-sig.ini" <<EOF
 HOME = .
 [ ca ]
 default_ca = default_ca
@@ -412,14 +411,14 @@ EOF
     -out "cert/sub-client/$name/default.crt" \
     -infiles "cert/sub-client/$name/cert.csr"
 
-  openssl x509 -in "cert/sub-client/$name/default.crt" > "cert/sub-client/$name/cert.crt"
+  openssl x509 -in "cert/sub-client/$name/default.crt" >"cert/sub-client/$name/cert.crt"
 
   rm -rf "cert/sub-client/$name/default.crt"
 
   {
     cat "cert/sub-client/$name/cert.crt"
     cat "cert/ca-root/cert.crt"
-  } > "cert/sub-client/$name/chain.crt"
+  } >"cert/sub-client/$name/chain.crt"
 
   echo "================================================================================"
   echo " Create Client intermediate CA"
@@ -487,7 +486,7 @@ function manualServer() {
     -out "$plain-temp" \
     -infiles "$file"
 
-  openssl x509 -in "$plain-temp" > "$plain"
+  openssl x509 -in "$plain-temp" >"$plain"
 
   rm -f "$plain-temp"
 
@@ -495,7 +494,7 @@ function manualServer() {
     cat "$plain"
     cat "cert/sub-server/cert.crt"
     cat "cert/ca-root/cert.crt"
-  } > "$chain"
+  } >"$chain"
 
   echo "================================================================================"
   echo " Server SSL certificate generated, CSR name $name"
@@ -520,7 +519,7 @@ function createServer() {
   [ -z "$OU" ] && OU="$DIST_OU_S"
   [ -z "$CN" ] && CN="$name"
 
-  cat > "output-server/$name/req.ini" << EOF
+  cat >"output-server/$name/req.ini" <<EOF
 HOME = .
 [ req ]
 default_bits       = 2048
@@ -551,7 +550,7 @@ EOF
   if [ -z "$AN" ] && [ -z "$IP" ]; then
 
     echo "WARNING: No SAN define, Using CN as SAN" && LIST_AN="$name"
-    echo "DNS.1=$name" >> "output-server/$name/req.ini"
+    echo "DNS.1=$name" >>"output-server/$name/req.ini"
 
   else
 
@@ -562,12 +561,12 @@ EOF
     COUNT_IP=1
 
     for i in $LIST_AN; do
-      echo "DNS.$COUNT_AN=$i" >> "output-server/$name/req.ini"
+      echo "DNS.$COUNT_AN=$i" >>"output-server/$name/req.ini"
       ((COUNT_AN++))
     done
 
     for i in $LIST_IP; do
-      echo "IP.$COUNT_IP=$i" >> "output-server/$name/req.ini"
+      echo "IP.$COUNT_IP=$i" >>"output-server/$name/req.ini"
       ((COUNT_IP++))
     done
 
@@ -585,7 +584,7 @@ EOF
     -out "output-server/$name/ssl-temp.crt" \
     -infiles "output-server/$name/ssl.csr"
 
-  openssl x509 -in "output-server/$name/ssl-temp.crt" > "output-server/$name/ssl.crt"
+  openssl x509 -in "output-server/$name/ssl-temp.crt" >"output-server/$name/ssl.crt"
 
   rm -f "output-server/$name/ssl-temp.crt"
 
@@ -593,7 +592,7 @@ EOF
     cat "output-server/$name/ssl.crt"
     cat "cert/sub-server/cert.crt"
     cat "cert/ca-root/cert.crt"
-  } > "output-server/$name/chain.crt"
+  } >"output-server/$name/chain.crt"
 
   openssl pkcs12 -export \
     -inkey "output-server/$name/ssl.key" \
@@ -628,7 +627,7 @@ function createClient() {
 
   mkdir -p "output-client/$name/$user"
 
-  cat > "output-client/$name/$user/req.ini" << EOF
+  cat >"output-client/$name/$user/req.ini" <<EOF
 HOME = .
 [ req ]
 default_bits       = 2048
@@ -669,7 +668,7 @@ EOF
     -out "output-client/$name/$user/ssl.crt-temp" \
     -infiles "output-client/$name/$user/ssl.csr"
 
-  openssl x509 -in "output-client/$name/$user/ssl.crt-temp" > "output-client/$name/$user/ssl.crt"
+  openssl x509 -in "output-client/$name/$user/ssl.crt-temp" >"output-client/$name/$user/ssl.crt"
 
   rm -f "output-client/$name/$user/ssl.crt-temp"
 
@@ -677,7 +676,7 @@ EOF
     cat "output-client/$name/$user/ssl.crt"
     cat "cert/sub-client/$name/cert.crt"
     cat "cert/ca-root/cert.crt"
-  } > "output-client/$name/$user/chain.crt"
+  } >"output-client/$name/$user/chain.crt"
 
   openssl pkcs12 -export \
     -inkey "output-client/$name/$user/ssl.key" \
