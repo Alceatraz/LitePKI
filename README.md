@@ -2,16 +2,14 @@
 
 You can create your own PKI infrastructure in 3 seconds!
 
-## Why bother using SSL ?
-
-Good question! So why bother your money in the bank or safety, Let's just brun them to oblivion!
+**Notice: This works on debian and won't test on CentOS. Who the Fxxk want CentOS/RHEL anymore?**
 
 ## TL;DR
 
-- Install openssl
-- Create folder, Copy script, Modify variables.
-- `sh litepki.sh help` to show usage.
-- `sh litepki.sh i` to generate your infrastructure.
+- Install openssl, make sure `openssl` can execute in PATH
+- Create folder, Copy script, Modify variables in the script
+- `sh litepki.sh help` to show usage
+- `sh litepki.sh i` to generate your infrastructure
 
 ## Setup step
 
@@ -98,8 +96,6 @@ And trust your Root-CA in all system:
 
 - Copy root-ca to `/usr/local/share/ca-certificates/xxx.crt`
 - Run command `update-ca-certificates`
-
-**Notice: This works on debian. And who the Fxxk want CentOS anymore?**
 
 ### Step 2
 
