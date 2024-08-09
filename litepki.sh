@@ -1,20 +1,19 @@
 #!/usr/bin/env bash
 
-# ===============================================================================================================================
-# ===============================================================================================================================
-# ===============================================================================================================================
+############################################# Don't modify above this line #############################################
 
-# Don't modify above this line
-
-# ===============================================================================================================================
-# ===============================================================================================================================
-# ===============================================================================================================================
-
-# Default signature expire date
+# Expire date
 
 [ -z "$DAYS" ] && DAYS="360"
 
-# Common part
+# Common part ==========================================================================================================
+
+# Here is DN part of a certificate
+
+# Country , State , Locality , Organization is common part of all CA
+# Organizational Unit, Common Name is different for each CA
+
+# Also as you can see, You can override them with ENVs, Expert only.
 
 [ -z "$DIST_C" ] && DIST_C='CN'
 [ -z "$DIST_ST" ] && DIST_ST='example'
@@ -25,7 +24,6 @@
 
 [ -z "$DIST_OU" ] && DIST_OU='example'
 [ -z "$DIST_CN" ] && DIST_CN='example Root CA'
-[ -z "$DIST_GN" ] && DIST_GN='example Root CA'
 
 # For Intermediate CA Server
 
@@ -42,15 +40,7 @@
 # X509_ROOT_CRL='URI:http://example.com/root.crl,URI:http://example.org/root.crl'
 # X509_SERV_CRL='URI:http://example.com/serv.crl,URI:http://example.org/serv.crl'
 
-# ===============================================================================================================================
-# ===============================================================================================================================
-# ===============================================================================================================================
-
-# Don't modify after this line
-
-# ===============================================================================================================================
-# ===============================================================================================================================
-# ===============================================================================================================================
+############################################# Don't modify below this line #############################################
 
 if [ "$DIST_ST" == "example" ] || [ "$DIST_L" == "example" ] || [ "$DIST_O" == "example" ] || [ "$DIST_OU" == "example" ]; then
   echo '================================================================================'
@@ -72,7 +62,7 @@ if [ "$DIST_OU_S" == "example" ] || [ "$DIST_OU_C" == "example" ]; then
   [ -z "$DEBUG" ] && exit 1
 fi
 
-# ===============================================================================================================================
+# ======================================================================================================================
 
 function help() {
   echo '================================================================================'
@@ -109,7 +99,7 @@ function helpAll() {
   echo '    sh litepki.sh r ops'
   echo '--------------------------------------------------------------------------------'
   echo '> Manual Server Issue: Sign CSR'
-  echo '    sh litepki.sh ms path/to/server.csr   Argument is path to file'
+  echo '    sh litepki.sh ms path/to/server.csr   Argument[2] is path to file'
   echo '--------------------------------------------------------------------------------'
   echo '> Create Server Cert: User Server CA create a HTTPS certificate'
   echo '    O="Example Inc." \                    Env - DN Organization'
@@ -117,20 +107,20 @@ function helpAll() {
   echo '    CN="www.example.com,jenkins.a.xyz" \  Env - DN CommonName, Null for name'
   echo '    AN="www.example.com,jenkins.a.xyz" \  Env - SAN DNS List, Null for CN'
   echo '    IP="1.1.1.1,2.2.2.2,3.3.3.3" \        Env - SAN IP list, Null for nothing'
-  echo '    sh litepki.sh vs www.example.com      Argument is folder name'
+  echo '    sh litepki.sh vs www.example.com      Argument[2] is folder name'
   echo '--------------------------------------------------------------------------------'
   echo '> Create Client Cert: Use Client CA called dev, Sign a cert for bob'
   echo '    O="Example Inc." \                    Env - DN Organization'
   echo '    OU="Dev of example Inc." \            Env - DN Organization Unit'
   echo '    CN="bob" \                            Env - DN CommonName, Null for name'
   echo '    GN="bob the big guy" \                Env - DN GivenName, Null for nothing'
-  echo '    sh litepki.sh vc dev bob              Argument is folder name'
+  echo '    sh litepki.sh vc dev bob              Argument[3] is folder name'
   echo '--------------------------------------------------------------------------------'
   echo '> Revoke Server Cert'
-  echo '    sh litepki.sh vs www.example.com      Argument is folder name'
+  echo '    sh litepki.sh vs www.example.com      Argument[2] is folder name'
   echo '--------------------------------------------------------------------------------'
   echo '> Revoke Client Cert'
-  echo '    sh litepki.sh vc dev bob              Argument is folder name'
+  echo '    sh litepki.sh vc dev bob              Argument[3] is folder name'
   echo '--------------------------------------------------------------------------------'
   echo '> Update CRL for CAs'
   echo '    sh litepki.sh ur                      Update RootCA CRL file'

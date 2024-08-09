@@ -1,102 +1,31 @@
 # LitePKI
 
-You can create your own PKI infrastructure in 3 seconds!
+A easy script to create PKI infrastructure in 3 seconds!
 
-**Notice: This works on debian and won't test on CentOS. Who the Fxxk want CentOS/RHEL anymore?**
+# Install
 
-## TL;DR
+1. Choose a folder as your foundation, Don't let anyone else touch it.
+2. Make sure you have bash shell, `Git for Windows` is recommended with windows.
+3. Install OpenSSL and make sure it in PATH.
+4. Copy `litepki.sh` into folder. And modify it, Details on comment.
+5. run `sh +x litepki.sh i` to initialization PKI. This will generate Root CA.
 
-- Install openssl, make sure `openssl` can execute in PATH
-- Create folder, Copy script, Modify variables in the script
-- `sh litepki.sh help` to show usage
-- `sh litepki.sh i` to generate your infrastructure
+# Config
 
-## Setup step
+Notice:
 
-### Step 0
+Intermediate CA Server: A CA for CSR signature (For https). Single.
+Intermediate CA Client: A CA for client auth like OpenVPN/OCServ/Nginx. Multi.
 
-Install OpenSSL
-
-### Step 1
-
-> This script design to be easy use, So some parameters move to setup stage.
-
-Create folder in safe place. Then copy `litepki.sh` into it.  
-Only modify content between `# Don't modify above this line` and `# Don't modify after this line`
-
-### Step 2
-
-Change the default days you like. I like set it to 36500 -- Just because, It's not safe!
-
-```shell
-[ -z "$DAYS" ] && DAYS="360"
-```
-
-### Step 3
-
-Change the basic setting of all certs, Its standard extern parts.
-
-```shell
-[ -z "$DIST_C" ] && DIST_C='CN'
-[ -z "$DIST_ST" ] && DIST_ST='example'
-[ -z "$DIST_L" ] && DIST_L='example'
-[ -z "$DIST_O" ] && DIST_O='example'
-```
-
-### Step 4
-
-Change your ROOT-CA name, Its standard extern parts.
-
-```shell
-[ -z "$DIST_OU" ] && DIST_OU='example'
-[ -z "$DIST_CN" ] && DIST_CN='example Root CA'
-[ -z "$DIST_GN" ] && DIST_GN='example Root CA'
-```
-
-### Step 5
-
-Change your Intermediate-CA name for server https
-
-```shell
-[ -z "$DIST_OU_S" ] && DIST_OU_S='example'
-[ -z "$DIST_CN_S" ] && DIST_CN_S='example Intermediate CA For HTTP-SSL'
-```
-
-### Step 6
-
-Change your Intermediate-CA name for client cert auth
-
-```shell
-[ -z "$DIST_OU_S" ] && DIST_OU_S='example'
-[ -z "$DIST_CN_S" ] && DIST_CN_S='example Intermediate CA For HTTP-SSL'
-```
-
-### Step 7
-
-Modify CRL setting, Or comment it if you don't need CRL.
-
-```shell
-X509_ROOT_CRL='URI:http://example.com/root.crl,URI:http://example.org/root.crl'
-X509_SERV_CRL='URI:http://example.com/serv.crl,URI:http://example.org/serv.crl'
-```
-
-## Usage and Demo
-
-### Step 0
-
-Create your own empire
-
-```shell
-sh litepki.sh i
-```
-
-### Step 1
-
-And trust your Root-CA in all system:
-
-- Copy root-ca to `/usr/local/share/ca-certificates/xxx.crt`
-- Run command `update-ca-certificates`
-
-### Step 2
+# Usage
 
 All usage show in `sh litepki.sh help`
+
+---
+
+# Tested on
+
+- Debian + bash
+- Windows + git for windows
+
+> RHEL/Centos/Fedora and any CtOS copy won't test.
