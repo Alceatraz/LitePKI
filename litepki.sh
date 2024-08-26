@@ -73,7 +73,7 @@ function help() {
   echo 'sh litepki.sh r <name> ------------------------------ Revoke Client CA with name'
   echo 'sh litepki.sh ur <name> -------------------------------------- Update RootCA CRL'
   echo 'sh litepki.sh us <name> ------------------------------------ Update ServerCA CRL'
-  echo 'sh litepki.sh uc {name} ------------------------------------ Update ClientCA CRL'
+  echo 'sh litepki.sh uc <name> ------------------------------------ Update ClientCA CRL'
   echo 'sh litepki.sh ms <name> -------------------------- Use ServerCA Sign CSR request'
   echo 'sh litepki.sh vs <name> ------------------------------ Create Server certificate'
   echo 'sh litepki.sh rs <name> ------------------------------ Revoke Server certificate'
@@ -407,7 +407,7 @@ EOF
     -keyout "cert/sub-client/$name/cert.key" \
     -config "cert/sub-client/$name/config-req.ini"
 
-  openssl ca -batch -days $DAYS \
+  openssl ca -batch -days "$DAYS" \
     -policy signing_policy \
     -extensions x509_extensions \
     -config cert/ca-root/config-sig.ini \
@@ -708,6 +708,8 @@ function revokeClient() {
   openssl ca -config "cert/sub-client/$name/config-sig.ini" -revoke "output-client/$name/$user/ssl.crt"
 }
 
+#=======================================================================================================================
+
 [ -z "$1" ] && help && exit 1
 
 case $1 in
@@ -815,3 +817,5 @@ case $1 in
   ;;
 
 esac
+
+#=======================================================================================================================
