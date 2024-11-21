@@ -1,0 +1,7 @@
+.idea/
+
+src/test/data/
+src/test/sign/
+src/test/temp/
+
+src/test/pki.sh
